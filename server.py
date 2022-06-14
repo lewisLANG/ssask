@@ -1,6 +1,23 @@
+"""
+-*- coding: utf-8 -*-
+@Author: XF010101
+@SoftWare: PyCharm
+@File: ssaskserver.py
+@Time: 2022/6/13 12:15
+"""
 import socket
 import logging
 
+def decodeL(text2):
+    text3 = ''  # 用来存放解密之后的内容
+    i = 0
+    # 用循环是为了替换掉文本中的每一个字符
+    while i < len(text2):
+        # ord(text2[i]) 意为先将字符转为ASCII码
+        # chr(...) 意为将处理好的ASCII码转换成字符
+        text3 = text3 + chr(ord(text2[i]) - 1)
+        i = i + 1
+    return text3
 
 def main():
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)  # 创建socket对象  属性为UDP连接
@@ -26,7 +43,9 @@ def main():
                 for address in user:  # 从user取出address
                     s.sendto((name + ' 离开了聊天室...').encode(), address)  # 发送name和address到客户端
             else:
-                print('"%s" from %s:%s' % (data.decode('utf-8'), addr[0], addr[1]))
+                datadecode = data.decode('utf-8')
+                datastr = datadecode.split(' : ')[0]+" : "+decodeL(datadecode.split(' : ')[1])
+                print('"%s" from %s:%s' % (datastr, addr[0], addr[1]))
                 for address in user:  # 从user遍历出address
                     if address != addr:  # address不等于addr时间执行下面的代码
                         s.sendto(data, address)  # 发送data和address到客户端
